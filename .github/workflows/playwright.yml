@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 jobs:
   test:
@@ -16,10 +17,21 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: npm
       - run: npm install
       - run: npx playwright install --with-deps chromium
       - run: npm test
+      - name: Publish Playwright success status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'success',
+              context: 'playwright-tests',
+              description: 'Desktop and mobile browser tests passed'
+            });
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
