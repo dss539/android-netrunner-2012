@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071019">
+  <meta name="description" content="A mechanics-first guide to the original 2012 edition of Android: Netrunner.">
+  <title>Android: Netrunner (2012) — Mechanics-First Guide</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#guideContent">Skip to guide</a>
+  <div class="progress" aria-hidden="true"><div id="progressBar"></div></div>
+  <header class="topbar">
+    <button id="menuButton" class="icon-button menu-button" type="button" aria-label="Open guide navigation" aria-expanded="false" aria-controls="sidebar">☰</button>
+    <a class="brand" href="#top" aria-label="Go to top"><span class="brand-mark" aria-hidden="true">N</span><span><strong>NETRUNNER</strong><small>2012 MECHANICS GUIDE</small></span></a>
+    <div class="top-actions"><button id="searchButton" class="icon-button" type="button" aria-label="Search guide">⌕</button><button id="themeButton" class="icon-button" type="button" aria-label="Switch color theme">◐</button></div>
+  </header>
+  <div id="overlay" class="overlay" hidden></div>
+  <aside id="sidebar" class="sidebar" aria-label="Guide navigation"><div class="sidebar-head"><span class="eyebrow">DIRECTORY</span><button id="closeMenuButton" class="icon-button" type="button" aria-label="Close guide navigation">×</button></div><nav id="guideNav" class="guide-nav"></nav></aside>
+  <dialog id="searchDialog" class="search-dialog"><form method="dialog" class="search-head"><label for="searchInput">Search the guide</label><button class="icon-button" value="cancel" aria-label="Close search">×</button></form><input id="searchInput" type="search" placeholder="Try “jack out”, “damage”, or “upgrades”" autocomplete="off"><p id="searchStatus" class="search-status" aria-live="polite"></p><div id="searchResults" class="search-results"></div></dialog>
+  <main id="top" class="guide">
+    <section class="hero"><div class="hero-grid" aria-hidden="true"></div><p class="eyebrow">SYSTEM BOOT // ORIGINAL CORE SET</p><div class="hero-title">ANDROID: <span>NETRUNNER</span></div><p class="hero-subtitle">A mechanics-first field guide to the 2012 edition.</p><div class="hero-actions"><a class="primary-button" href="#lesson-1-learn-the-core-game">Start Lesson 1</a><a class="secondary-button" href="#one-page-mental-model">View mental model</a></div><div class="lesson-strip" aria-label="Guide structure"><a href="#lesson-1-learn-the-core-game"><b>01</b><span>Core game</span></a><a href="#lesson-2-play-the-same-game-with-more-detail"><b>02</b><span>More detail</span></a><a href="#lesson-3-card-effects-and-offensive-mechanics"><b>03</b><span>Card effects</span></a><a href="#lesson-4-rules-that-prevent-confusion"><b>04</b><span>Edge cases</span></a></div></section>
+    <article id="guideContent" class="guide-content" aria-live="polite"><p>Loading guide…</p></article>
+    <nav class="end-nav" aria-label="End of guide actions"><a href="#top">Return to top</a><a href="guide.md">Read source Markdown</a></nav>
+  </main>
+  <button id="backToTop" class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <script src="https://cdn.jsdelivr.net/npm/marked@16.1.2/marked.min.js" integrity="sha384-+r7C6DJZ8zQzWQX4tM4Hf5i8L6gPcb7A5wVGjSwnLqP5wP9rN3X5RvNQxP0VqE0A" crossorigin="anonymous"></script>
+  <script src="app.js"></script>
+</body>
+</html>
