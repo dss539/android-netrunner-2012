@@ -15,8 +15,12 @@
   const progressBar = document.getElementById('progressBar');
   const backToTop = document.getElementById('backToTop');
 
-  const slugify = text => text.toLowerCase().trim()
-    .replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const slugify = text => {
+    const slug = text.toLowerCase().trim()
+      .replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    if (!slug) return 'section';
+    return /^\d/.test(slug) ? `section-${slug}` : slug;
+  };
 
   const setMenu = open => {
     sidebar.classList.toggle('open', open);
@@ -41,7 +45,7 @@
       const usedIds = new Map();
       const headings = [...guideContent.querySelectorAll('h1, h2, h3')];
       headings.forEach(heading => {
-        const base = slugify(heading.textContent) || 'section';
+        const base = slugify(heading.textContent);
         const count = usedIds.get(base) || 0;
         usedIds.set(base, count + 1);
         heading.id = count ? `${base}-${count + 1}` : base;
@@ -128,7 +132,10 @@
       event.preventDefault();
       searchButton.click();
     }
-    if (event.key === 'Escape' && sidebar.classList.contains('open')) setMenu(false);
+    if (event.key === 'Escape') {
+      if (searchDialog.open) searchDialog.close();
+      if (sidebar.classList.contains('open')) setMenu(false);
+    }
   });
 
   const onScroll = () => {
