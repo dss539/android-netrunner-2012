@@ -1,7 +1,11 @@
 {
   "private": true,
   "scripts": {
+    "build": "node build.mjs",
     "test": "playwright test"
+  },
+  "dependencies": {
+    "marked": "^16.1.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.54.1"
