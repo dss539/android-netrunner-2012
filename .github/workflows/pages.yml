@@ -9,6 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  statuses: write
 
 concurrency:
   group: pages
@@ -20,6 +21,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -36,3 +39,36 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl deployed website until available
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          for attempt in $(seq 1 36); do
+            echo "Attempt $attempt: $PAGE_URL"
+            if curl --fail --silent --show-error --location "$PAGE_URL" --output page.html \
+              && grep --quiet "Android: Netrunner (2012)" page.html; then
+              echo "Website returned the expected page."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Website did not return the expected page."
+          exit 1
+      - name: Publish live-site commit status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'success',
+              context: 'pages-live',
+              description: 'Public site returned the expected HTML',
+              target_url: '${{ needs.deploy.outputs.page_url }}'
+            });
