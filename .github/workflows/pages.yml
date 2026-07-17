@@ -24,20 +24,18 @@ jobs:
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Prepare site
-        run: |
-          mkdir _site
-          cp index.html styles.css app.js guide.md 404.html .nojekyll _site/
-      - name: Configure Pages
-        uses: actions/configure-pages@v6
-      - name: Upload site
-        uses: actions/upload-pages-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npm run build
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
-      - name: Deploy
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
 
   verify:
@@ -49,18 +47,15 @@ jobs:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
         run: |
           for attempt in $(seq 1 36); do
-            echo "Attempt $attempt: $PAGE_URL"
             if curl --fail --silent --show-error --location "$PAGE_URL" --output page.html \
-              && grep --quiet "Android: Netrunner (2012)" page.html; then
-              echo "Website returned the expected page."
+              && grep --quiet "Lesson 1 — Learn the Core Game" page.html \
+              && ! grep --quiet "cdn.jsdelivr.net/npm/marked" page.html; then
               exit 0
             fi
             sleep 5
           done
-          echo "Website did not return the expected page."
           exit 1
-      - name: Publish live-site commit status
-        uses: actions/github-script@v7
+      - uses: actions/github-script@v7
         with:
           script: |
             await github.rest.repos.createCommitStatus({
@@ -69,6 +64,6 @@ jobs:
               sha: context.sha,
               state: 'success',
               context: 'pages-live',
-              description: 'Public site returned the expected HTML',
+              description: 'Self-contained public page verified',
               target_url: '${{ needs.deploy.outputs.page_url }}'
             });
