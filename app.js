@@ -31,10 +31,12 @@
 
   async function initialize() {
     try {
-      const response = await fetch('guide.md');
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const markdown = await response.text();
-      guideContent.innerHTML = marked.parse(markdown, { gfm: true });
+      if (guideContent.dataset.rendered !== 'true') {
+        const response = await fetch('guide.md');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!window.marked) throw new Error('Markdown renderer unavailable');
+        guideContent.innerHTML = window.marked.parse(await response.text(), { gfm: true });
+      }
 
       const usedIds = new Map();
       const headings = [...guideContent.querySelectorAll('h1, h2, h3')];
