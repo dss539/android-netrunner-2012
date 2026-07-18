@@ -15,11 +15,15 @@ const html = template
 await writeFile('_site/index.html', html);
 await Promise.all([
   'styles.css',
+  'diagrams.css',
   'app.js',
   'guide.md',
   '404.html',
   '.nojekyll',
   'corp-diagram.js',
   'remote-diagram.js',
-  'runner-diagram.js'
+  'runner-diagram.js',
+  'corp-layout.svg',
+  'remote-layout.svg',
+  'runner-layout.svg'
 ].map(file => copyFile(file, `_site/${file}`)));
