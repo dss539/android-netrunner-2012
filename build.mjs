@@ -13,4 +13,13 @@ const html = template
   .replace(/\s*<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/marked[^>]+><\/script>/, '');
 
 await writeFile('_site/index.html', html);
-await Promise.all(['styles.css', 'app.js', 'guide.md', '404.html', '.nojekyll'].map(file => copyFile(file, `_site/${file}`)));
+await Promise.all([
+  'styles.css',
+  'app.js',
+  'guide.md',
+  '404.html',
+  '.nojekyll',
+  'corp-diagram.js',
+  'remote-diagram.js',
+  'runner-diagram.js'
+].map(file => copyFile(file, `_site/${file}`)));
