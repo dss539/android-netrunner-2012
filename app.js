@@ -16,8 +16,7 @@
   const backToTop = document.getElementById('backToTop');
 
   const slugify = text => {
-    const slug = text.toLowerCase().trim()
-      .replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const slug = text.toLowerCase().trim().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     if (!slug) return 'section';
     return /^\d/.test(slug) ? `section-${slug}` : slug;
   };
@@ -32,6 +31,63 @@
   const escapeHtml = value => value.replace(/[&<>'"]/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
   })[char]);
+
+  const makeFigure = ({ src, alt, caption }) => {
+    const figure = document.createElement('figure');
+    figure.className = 'play-area-figure';
+    const link = document.createElement('a');
+    link.className = 'play-area-figure-link';
+    link.href = src;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    const img = document.createElement('img');
+    img.className = 'play-area-image';
+    img.src = src;
+    img.alt = alt;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    link.append(img);
+    figure.append(link);
+    const figcaption = document.createElement('figcaption');
+    figcaption.className = 'play-area-caption';
+    figcaption.textContent = caption;
+    figure.append(figcaption);
+    return figure;
+  };
+
+  const insertPlayAreaFigures = () => {
+    const diagrams = window.playAreaDiagrams;
+    if (!diagrams) return;
+    const subsectionNodes = id => {
+      const heading = document.getElementById(id);
+      const nodes = [];
+      let node = heading?.nextElementSibling;
+      while (node && !/^H[1-3]$/.test(node.tagName)) {
+        nodes.push(node);
+        node = node.nextElementSibling;
+      }
+      return nodes;
+    };
+
+    const corpPres = subsectionNodes('corporation-side').filter(node => node.tagName === 'PRE');
+    corpPres[0]?.insertAdjacentElement('afterend', makeFigure({
+      src: diagrams.corp,
+      alt: 'Corporation table layout showing HQ, R&D, and Archives as separate server columns. Each server has a vertical column of sideways ICE extending toward the Runner.',
+      caption: 'Figure 1. Each central server has its own vertical ICE column. Individual ICE cards are installed sideways; the outermost ICE is closest to the Runner and is encountered first.'
+    }));
+    corpPres[1]?.insertAdjacentElement('afterend', makeFigure({
+      src: diagrams.remote,
+      alt: 'Two remote servers, each containing one agenda or asset plus upgrades and protected by a vertical column of sideways ICE.',
+      caption: 'Figure 2. A remote server contains one agenda or one asset plus any number of upgrades. Its protecting ICE forms a vertical column of sideways cards toward the Runner.'
+    }));
+
+    const runnerPre = subsectionNodes('runner-side').find(node => node.tagName === 'PRE');
+    runnerPre?.insertAdjacentElement('afterend', makeFigure({
+      src: diagrams.runner,
+      alt: 'Runner table layout showing Stack, Identity, Heap, installed Programs, Hardware, Resources, credits, tags, counters, scored agendas, and memory units.',
+      caption: 'Figure 3. The Runner rig contains programs, hardware, and resources. Grouping installed cards by type makes the game state easier to read.'
+    }));
+  };
 
   async function initialize() {
     try {
@@ -52,6 +108,8 @@
         heading.tabIndex = -1;
         if (heading.tagName === 'H1' && heading !== headings[0]) heading.classList.add('lesson-heading');
       });
+
+      insertPlayAreaFigures();
 
       const links = headings.map(heading => {
         const link = document.createElement('a');
@@ -115,18 +173,15 @@
   menuButton.addEventListener('click', () => setMenu(true));
   closeMenuButton.addEventListener('click', () => setMenu(false));
   overlay.addEventListener('click', () => setMenu(false));
-
   root.dataset.theme = localStorage.getItem('netrunner-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
   themeButton.addEventListener('click', () => {
     root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
     localStorage.setItem('netrunner-theme', root.dataset.theme);
   });
-
   searchButton.addEventListener('click', () => {
     searchDialog.showModal();
     requestAnimationFrame(() => searchInput.focus());
   });
-
   document.addEventListener('keydown', event => {
     if ((event.key === '/' || ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k')) && !searchDialog.open) {
       event.preventDefault();
@@ -137,7 +192,6 @@
       if (sidebar.classList.contains('open')) setMenu(false);
     }
   });
-
   const onScroll = () => {
     const max = document.documentElement.scrollHeight - innerHeight;
     progressBar.style.width = `${max > 0 ? (scrollY / max) * 100 : 0}%`;
